@@ -1,0 +1,66 @@
+<section class="bg-[radial-gradient(circle_at_20%_20%,#3a3a3a,#1c1c1c_70%)] px-4 pt-16 pb-24 text-center text-white">
+  <h1 class="font-display mb-8 text-3xl leading-tight font-bold sm:text-5xl">
+    Order <i class="font-script text-[1.25em] font-normal">Food Online From</i> the<br />Best Restaurants
+  </h1>
+
+  <div class="mx-auto grid max-w-3xl gap-2.5 bg-brand-light p-3 sm:grid-cols-[1fr_1fr_150px]">
+    <input class="min-w-0 bg-white px-4 py-3 text-sm text-neutral-900" [(ngModel)]="name" placeholder="Restaurant Name"
+      (keyup.enter)="search()" aria-label="Restaurant name" />
+    <select class="min-w-0 bg-white px-4 py-3 text-sm text-neutral-900" [(ngModel)]="cityId" (ngModelChange)="search()" aria-label="City">
+      <option [ngValue]="null">All cities</option>
+      @for (c of cities(); track c.id) {
+        <option [ngValue]="c.id">{{ c.name }}</option>
+      }
+    </select>
+    <button class="btn-red py-3" (click)="search()">SEARCH</button>
+  </div>
+
+  <div class="mt-8 flex flex-wrap justify-center gap-x-9 gap-y-6 text-left">
+    @for (s of stats; track s.label) {
+      <div class="flex items-center gap-3">
+        <span class="grid size-12 place-items-center rounded-full bg-white text-xl">{{ s.icon }}</span>
+        <div>
+          <b class="font-display block text-xl leading-none font-semibold">{{ s.n }}</b>
+          <small class="text-xs opacity-75">{{ s.label }}</small>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="relative mx-auto -mt-12 max-w-6xl rounded-t-3xl bg-white px-4 pt-8 pb-12 shadow-[0_-4px_24px_#0002] sm:px-12">
+  @if (error()) { <p class="msg msg-err">{{ error() }}</p> }
+  @if (loading()) {
+    <p class="msg">Loading restaurants…</p>
+  } @else if (!shown().length && !error()) {
+    <p class="msg">No restaurants found. Try another city or name.</p>
+  }
+
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    @for (r of shown(); track r.id) {
+      <article class="bg-white pb-4 shadow-md">
+        <img class="h-48 w-full object-cover" [src]="imgOf(r)" [alt]="r.name" loading="lazy" />
+        <div class="relative -mt-4 mx-2.5 flex justify-between gap-2 bg-brand-light px-3 py-1 text-xs font-bold">
+          <span class="tracking-wider">
+            @for (s of stars; track s) { {{ s <= (r['rating'] ?? 4) ? '★' : '☆' }} }
+          </span>
+          <span>💬 {{ r['commentsCount'] ?? r['reviewsCount'] ?? 0 }}</span>
+          <span>♥ {{ r['likesCount'] ?? r['likes'] ?? 0 }}</span>
+        </div>
+        <h3 class="font-script mx-4 mt-3 text-2xl">{{ r.name }}</h3>
+        <p class="mx-4 mb-3 line-clamp-3 text-sm text-neutral-500">
+          {{ r.description || r['address'] || 'Fresh food, cooked to order and delivered to your door.' }}
+        </p>
+        <a class="link-u mx-4" [routerLink]="['/restaurant', r.id]">MENU ›</a>
+      </article>
+    }
+  </div>
+
+  <nav class="mt-7 flex justify-center gap-2" aria-label="Pagination">
+    <button class="pg" [disabled]="page() === 1" (click)="go(page() - 1)" aria-label="Previous page">‹</button>
+    @for (p of pages(); track p) {
+      <button class="pg" [class.pg-on]="p === page()" (click)="go(p)">{{ p }}</button>
+    }
+    <button class="pg" [disabled]="!hasNext()" (click)="go(page() + 1)" aria-label="Next page">›</button>
+  </nav>
+</section>

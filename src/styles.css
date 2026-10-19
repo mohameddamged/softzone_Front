@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #f5a30a;
+  --color-brand-light: #fdb913;
+  --color-hot: #ef1c2c;
+  --font-display: "Poppins", sans-serif;
+  --font-script: "Great Vibes", cursive;
+  --font-cond: "Oswald", sans-serif;
+  --font-sans: "Lato", sans-serif;
+}
+
+@layer components {
+  .btn-yellow { @apply inline-block bg-brand px-6 py-3 text-xs font-bold text-neutral-900 no-underline hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-yellow-sm { @apply inline-block bg-brand px-4 py-2 text-[11px] font-bold text-neutral-900 no-underline hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-red { @apply bg-hot text-xs font-bold tracking-wide text-white hover:brightness-110; }
+  .pg { @apply grid h-9 min-w-9 place-items-center border border-brand bg-white px-2 text-sm text-brand disabled:opacity-40; }
+  .pg-on { @apply bg-brand text-white; }
+  .link-u { @apply border-b border-neutral-300 pb-0.5 text-xs font-bold text-neutral-900 no-underline hover:text-brand; }
+  .msg { @apply p-4 text-center text-neutral-500; }
+  .msg-err { @apply text-red-700; }
+}
+
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--color-hot); outline-offset: 2px; }

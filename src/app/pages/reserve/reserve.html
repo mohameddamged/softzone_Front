@@ -1,0 +1,44 @@
+<section class="mx-auto grid max-w-5xl items-start gap-10 px-5 pt-10 pb-12 md:grid-cols-[1.2fr_1fr]">
+  <div>
+    <h2 class="font-script text-5xl sm:text-6xl">Reserve Now</h2>
+    <p class="mb-5 max-w-prose text-neutral-500">Tell us where to send your order. We use these details to confirm it with you.</p>
+
+    <form #f="ngForm" (ngSubmit)="confirm(f.valid)" novalidate>
+      <div class="grid gap-3 sm:grid-cols-2">
+        @for (field of [
+          { name: 'name', ph: 'Name', icon: '✎' }, { name: 'phone', ph: 'Phone', icon: '✆' },
+          { name: 'email', ph: 'Email', icon: '✉' }, { name: 'address', ph: 'Address', icon: '⌖' }
+        ]; track field.name) {
+          <div class="flex border border-neutral-700">
+            @switch (field.name) {
+              @case ('name') { <input class="min-w-0 flex-1 px-3 py-2.5 text-sm" name="name" [(ngModel)]="customer.name" placeholder="Name" required aria-label="Name" /> }
+              @case ('phone') { <input class="min-w-0 flex-1 px-3 py-2.5 text-sm" name="phone" [(ngModel)]="customer.phone" placeholder="Phone" required pattern="[0-9+\- ]{7,}" aria-label="Phone" /> }
+              @case ('email') { <input class="min-w-0 flex-1 px-3 py-2.5 text-sm" name="email" type="email" [(ngModel)]="customer.email" placeholder="Email" required email aria-label="Email" /> }
+              @default { <input class="min-w-0 flex-1 px-3 py-2.5 text-sm" name="address" [(ngModel)]="customer.address" placeholder="Address" required aria-label="Address" /> }
+            }
+            <span class="grid w-9 place-items-center bg-neutral-700 text-sm text-white">{{ field.icon }}</span>
+          </div>
+        }
+      </div>
+
+      @if (tried() && f.invalid) { <p class="msg msg-err">Fill in every field with a valid phone number and email.</p> }
+
+      <div class="mt-4 flex justify-between">
+        <button type="button" class="btn-yellow-sm" (click)="back()">BACK</button>
+        <button type="submit" class="btn-yellow-sm">CONFIRM</button>
+      </div>
+    </form>
+  </div>
+
+  @if (special(); as s) {
+    <aside class="border-2 border-brand p-3 shadow-md">
+      <div class="flex items-center justify-between">
+        <h4 class="font-cond text-lg font-medium"><span class="font-script text-2xl text-brand">Todays</span> Special</h4>
+        <b class="bg-brand px-2.5 py-0.5 font-semibold">{{ s.price | currency: 'USD' }}</b>
+      </div>
+      <small class="font-bold">{{ s.name }}</small>
+      <p class="mt-1 mb-2 text-xs text-neutral-500">{{ s.description }}</p>
+      <img class="h-52 w-full object-cover" [src]="imgOf(s)" [alt]="s.name" />
+    </aside>
+  }
+</section>

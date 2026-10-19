@@ -1,0 +1,71 @@
+<section class="mx-auto max-w-3xl px-5 pt-10 pb-12">
+  @if (done()) {
+    <div class="py-12 text-center">
+      <h2 class="font-script text-5xl sm:text-6xl">Order placed</h2>
+      <p class="mb-6 text-neutral-500">Thank you, {{ doneName }}. We received your order and will contact you shortly.</p>
+      <a class="btn-yellow-sm" routerLink="/">BACK TO RESTAURANTS</a>
+    </div>
+  } @else {
+    <h2 class="font-cond text-2xl font-semibold">YOUR DATA</h2>
+    <hr class="mt-1 mb-4 w-8 border-t-2 border-brand" />
+
+    <div class="mb-6 grid gap-4 text-xs text-neutral-500 sm:grid-cols-4">
+      @for (f of [
+        { icon: '👤', label: 'Name', v: customer().name }, { icon: '✆', label: 'Phone', v: customer().phone },
+        { icon: '✉', label: 'E-mail', v: customer().email }, { icon: '⌖', label: 'Address', v: customer().address }
+      ]; track f.label) {
+        <div class="grid grid-cols-[auto_1fr] gap-x-2">
+          <span class="text-brand">{{ f.icon }}</span>
+          <b class="font-cond text-base font-semibold text-neutral-900">{{ f.label }}</b>
+          <span class="col-start-2 break-words">{{ f.v }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="overflow-x-auto border border-neutral-200">
+      <table class="w-full border-collapse text-sm">
+        <thead>
+          <tr class="text-left text-[11px] font-normal">
+            <th class="border border-neutral-200 p-2.5"></th>
+            <th class="border border-neutral-200 p-2.5">PRODUCT</th>
+            <th class="border border-neutral-200 p-2.5">PRICE</th>
+            <th class="border border-neutral-200 p-2.5">QUANTITY</th>
+            <th class="border border-neutral-200 p-2.5">TOTAL</th>
+            <th class="border border-neutral-200 p-2.5"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of cart.lines(); track l.item.id) {
+            <tr class="font-bold">
+              <td class="border border-neutral-200 p-2.5"><img class="size-12 rounded-full object-cover" [src]="imgOf(l.item)" [alt]="l.item.name" /></td>
+              <td class="font-cond border border-neutral-200 p-2.5 tracking-wider">{{ l.item.name }}</td>
+              <td class="border border-neutral-200 p-2.5">{{ l.item.price | currency: 'USD' }}</td>
+              <td class="border border-neutral-200 p-2.5">
+                <div class="flex items-center gap-1">
+                  <button class="size-6 border border-neutral-200 bg-white leading-none" (click)="cart.setQty(l.item.id, l.qty + 1)" aria-label="Increase">+</button>
+                  <span class="min-w-9 border border-neutral-200 py-0.5 text-center">{{ l.qty }}</span>
+                  <button class="size-6 border border-neutral-200 bg-white leading-none" (click)="cart.setQty(l.item.id, l.qty - 1)" aria-label="Decrease">−</button>
+                </div>
+              </td>
+              <td class="border border-neutral-200 p-2.5">{{ l.item.price * l.qty | currency: 'USD' }}</td>
+              <td class="border border-neutral-200 p-2.5"><button class="text-brand" (click)="cart.remove(l.item.id)" aria-label="Remove">✕</button></td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6" class="msg">Your order is empty.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-6 border border-neutral-200 p-4">
+      <h4 class="font-cond mb-2 font-semibold tracking-wider">Total</h4>
+      <div class="font-cond flex justify-between border-b border-neutral-200 py-1.5 text-sm font-semibold"><b>Subtotal</b><b>{{ cart.total() | currency: 'USD' }}</b></div>
+      <div class="font-cond flex justify-between border-b border-neutral-200 py-1.5 text-sm font-semibold"><b>Total</b><b>{{ cart.total() | currency: 'USD' }}</b></div>
+      @if (error()) { <p class="msg msg-err">{{ error() }}</p> }
+      <div class="mt-4 flex justify-between">
+        <button class="btn-yellow-sm" (click)="back()">BACK</button>
+        <button class="btn-yellow-sm" [disabled]="busy() || !cart.count()" (click)="checkout()">{{ busy() ? 'SENDING…' : 'CHECKOUT' }}</button>
+      </div>
+    </div>
+  }
+</section>
